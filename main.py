@@ -11,26 +11,32 @@ class CommonResource:
 
 commRes = CommonResource()
 
-# def run(rl:Redlock):
-#     lock = rl.lock("app",1000)
-#     if not lock:
-#         return
+def run(rl:Redlock):
+    while True:
+        lock = rl.lock("app",1)
+        if not lock:
+            continue
+        commRes.x = 0
+        # print(lock)
+        for _ in range(1,5):
+            print(get_native_id(), commRes.x)
+            commRes.x +=1
+            time.sleep(0.1)
+        rl.unlock(lock)
+        
+# def run():
 #     commRes.x = 0
 #     for _ in range(1,5):
 #         print(get_native_id(), commRes.x)
 #         commRes.x +=1
-#         time.sleep(100)
-#     rl.unlock(rl)
-        
-def run():
-    commRes.x = 0
-    for _ in range(1,5):
-        print(get_native_id(), commRes.x)
-        commRes.x +=1
-        # time.sleep(100)
+#         # time.sleep(100)
+
+
 
 if __name__ == "__main__":
-    Thread(target=run).start()
-    Thread(target=run).start()
-    Thread(target=run).start()
+    rl = Redlock("redis://localhost:6379",1)
+    
+    Thread(target=run,args=[rl]).start()
+    Thread(target=run,args=[rl]).start()
+    Thread(target=run,args=[rl]).start()
     

@@ -17,26 +17,27 @@ class Redlock(Lock):
             self.server_redis = StrictRedis.from_url(connect_info)
         
         
-    def _unlock_instance(self, resource:str,key:bytes):
+    def _unlock_instance(self, resource:str,key:bytes):        
         if self.server_redis.get(resource) == key:
             self.server_redis.delete(resource)
         
     def _lock_instance(self,resorce: str,val:bytes, ttl: int):
-        self.server_redis.set(resorce,val,nx = True,px = ttl)
+        return self.server_redis.set(resorce,val,nx = True,px = ttl)        
+        
+    
     
     def lock(self, resorce: str, ttl: int):
-        retry = 0
-        val = get_unique_id()
-        err = None
+        retry,flag,err = 0,False,None
+        val = get_unique_id()       
         while retry < self.retry_count:
             start_time = int(time.time() * 1000)
             try:
-                self._lock_instance(resorce,val,ttl)
+                flag = self._lock_instance(resorce,val,ttl)
             except RedisError as e:
                 err = e
             elapsed_time = int(time.time() * 1000) - start_time
             validity = int(ttl - elapsed_time)
-            if validity > 0:
+            if validity > 0 and flag:
                 if err:
                     raise err
                 return ObjLock(validity,resorce,val)
