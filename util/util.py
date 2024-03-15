@@ -4,4 +4,4 @@ import os
 ObjLock = namedtuple("ObjLock", ("validity", "resource", "key"))
 
 def get_unique_id():
-    return os.urandom(22)
+    return os.urandom(30)
