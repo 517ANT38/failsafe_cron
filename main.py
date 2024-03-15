@@ -21,7 +21,7 @@ def run(rl:Redlock):
         for _ in range(1,5):
             print(get_native_id(), commRes.x)
             commRes.x +=1
-            time.sleep(0.1)
+            time.sleep(0.001)
         rl.unlock(lock)
         
 # def run():

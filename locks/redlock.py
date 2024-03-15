@@ -30,7 +30,7 @@ class Redlock(Lock):
     
     def lock(self, resorce: str, ttl: int):
         retry,flag,err = 0,False,None
-        val = self.gerate_val.generate()       
+        val = self.gerate_val.generate(22)       
         while retry < self.retry_count:
             start_time = int(time.time() * 1000)
             try:
