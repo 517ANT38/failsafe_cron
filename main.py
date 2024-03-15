@@ -38,5 +38,5 @@ if __name__ == "__main__":
     
     Thread(target=run,args=[rl]).start()
     Thread(target=run,args=[rl]).start()
-    Thread(target=run,args=[rl]).start()
+    # Thread(target=run,args=[rl]).start()
     
