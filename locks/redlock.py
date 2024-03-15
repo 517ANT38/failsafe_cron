@@ -2,6 +2,7 @@
 import time
 from redis import RedisError, StrictRedis
 from locks.lock import Lock
+from util.simple_genrate import SimpleGenerate
 from util.util import ObjLock, get_unique_id
 
 
@@ -11,24 +12,25 @@ class Redlock(Lock):
     def __init__(self,connect_info:str|dict,retry_count=3, retry_delay=0.2):
         self.retry_count = retry_count
         self.retry_delay = retry_delay
+        self.gerate_val = SimpleGenerate()
         if type(connect_info) == dict:
             self.server_redis = StrictRedis(**connect_info)
         else:
             self.server_redis = StrictRedis.from_url(connect_info)
         
         
-    def _unlock_instance(self, resource:str,key:bytes):        
+    def _unlock_instance(self, resource:str,key:str):        
         if self.server_redis.get(resource) == key:
             self.server_redis.delete(resource)
         
-    def _lock_instance(self,resorce: str,val:bytes, ttl: int):
+    def _lock_instance(self,resorce: str,val:str, ttl: int):
         return self.server_redis.set(resorce,val,nx = True,px = ttl)        
         
     
     
     def lock(self, resorce: str, ttl: int):
         retry,flag,err = 0,False,None
-        val = get_unique_id()       
+        val = self.gerate_val.generate()       
         while retry < self.retry_count:
             start_time = int(time.time() * 1000)
             try:
@@ -37,7 +39,7 @@ class Redlock(Lock):
                 err = e
             elapsed_time = int(time.time() * 1000) - start_time
             validity = int(ttl - elapsed_time)
-            if validity > 0 and flag:
+            if validity > 0 and not flag:
                 if err:
                     raise err
                 return ObjLock(validity,resorce,val)
