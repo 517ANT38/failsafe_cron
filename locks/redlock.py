@@ -2,8 +2,8 @@
 import time
 from redis import RedisError, StrictRedis
 from locks.lock import Lock
-from util.simple_genrate import SimpleGenerate
-from util.util import ObjLock, get_unique_id
+from util.simple_generate import SimpleGenerate
+from util.util import ObjLock
 
 
 class Redlock(Lock):
