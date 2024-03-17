@@ -1,7 +1,7 @@
 
 
 import os
-from starters.starter_worker_file import StarterWorkerFile
+from app.starters.starter_worker_file import StarterWorkerFile
 
 
 
@@ -11,5 +11,5 @@ if __name__ == "__main__":
     connect_str = os.environ.get("CONNECT_STRING")
     if not filename or not connect_str:
         raise EnvironmentError("Paramas not specified")
-    app = StarterWorkerFile(filename,connect_str)
+    app = StarterWorkerFile(filename,connect_str)    
     app.run()
