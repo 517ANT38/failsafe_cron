@@ -45,7 +45,7 @@ class Redlock(Lock):
                 err = e
             elapsed_time = int(time.time() * 1000) - start_time
             validity = int(ttl - elapsed_time)
-            if validity > 0 and not flag:
+            if validity > 0 and flag:                
                 if err:
                     raise err
                 return ObjLock(validity,resorce,val)

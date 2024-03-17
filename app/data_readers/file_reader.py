@@ -9,7 +9,7 @@ class FileReader(DataReader[str]):
         self._filename = filename
     
     def read(self) -> str:
-        with open(self._filename) as f:
+        with open(self._filename,"r") as f:
             arr = f.readlines()
             if len(arr) == 0:
                 return ""
