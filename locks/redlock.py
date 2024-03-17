@@ -1,4 +1,5 @@
 
+import logging
 import time
 from redis import RedisError, StrictRedis
 from locks.lock import Lock
@@ -20,8 +21,12 @@ class Redlock(Lock):
         
         
     def _unlock_instance(self, resource:str,key:str):        
-        if self.server_redis.get(resource) == key:
-            self.server_redis.delete(resource)
+        try:
+            if self.server_redis.get(resource) == key:
+                self.server_redis.delete(resource)
+        except Exception as e:
+            logging.exception("Error unlocking resource %s in server: %s", resource,e)
+            raise e
         
     def _lock_instance(self,resorce: str,val:str, ttl: int):
         return self.server_redis.set(resorce,val,nx = True,px = ttl)        
@@ -36,6 +41,7 @@ class Redlock(Lock):
             try:
                 flag = self._lock_instance(resorce,val,ttl)
             except RedisError as e:
+                logging.exception("Error redis error : %s", e)
                 err = e
             elapsed_time = int(time.time() * 1000) - start_time
             validity = int(ttl - elapsed_time)

@@ -8,12 +8,13 @@ from locks.redlock import Redlock
 
 class AppWorkerFile(App):
     def __init__(self,filename:str,redis_url:str):
+        self.resorce = filename
         self.data_reader = FileReader(filename)
         self.data_writer = FileWriter(filename)
-        self.data_transform = TransformStr(redis_url)
-        self.red_lock = Redlock()
+        self.data_transform = TransformStr()
+        self.red_lock = Redlock(redis_url)
     def run(self) -> None:
-        lock = self.red_lock.lock()
+        lock = self.red_lock.lock(self.resorce,1)
         if not lock:
             return
         s = self.data_reader.read()
