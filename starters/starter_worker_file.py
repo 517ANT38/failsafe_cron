@@ -1,12 +1,12 @@
 
-from apps.app import App
+from starters.starter import Starter
 from data_readers.file_reader import FileReader
 from data_transform.transform_string import TransformStr
 from data_writers.file_writer import FileWriter
 from locks.redlock import Redlock
 
 
-class AppWorkerFile(App):
+class StarterWorkerFile(Starter):
     def __init__(self,filename:str,redis_url:str):
         self.resorce = filename
         self.data_reader = FileReader(filename)
