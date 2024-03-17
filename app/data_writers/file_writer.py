@@ -1,7 +1,7 @@
 
 
 
-from data_writers.data_writer import DataWriter
+from app.data_writers.data_writer import DataWriter
 
 
 class FileWriter(DataWriter[str]):

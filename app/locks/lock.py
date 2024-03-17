@@ -1,6 +1,6 @@
 from abc import ABC,abstractmethod
 
-from util.util import ObjLock
+from app.util.util import ObjLock
 
 class Lock(ABC):
 

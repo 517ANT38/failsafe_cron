@@ -1,6 +1,6 @@
 import random
 import string
-from util.generate_unique import GenerateUnique
+from app.util.generate_unique import GenerateUnique
 
 CHARACTERS = string.ascii_letters + string.digits
 

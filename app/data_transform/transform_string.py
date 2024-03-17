@@ -1,5 +1,5 @@
 
-from data_transform.transform import TransformData
+from app.data_transform.transform import TransformData
 
 
 class TransformStr(TransformData[str,str]):

@@ -1,9 +1,9 @@
 
-from starters.starter import Starter
-from data_readers.file_reader import FileReader
-from data_transform.transform_string import TransformStr
-from data_writers.file_writer import FileWriter
-from locks.redlock import Redlock
+from app.starters.starter import Starter
+from app.data_readers.file_reader import FileReader
+from app.data_transform.transform_string import TransformStr
+from app.data_writers.file_writer import FileWriter
+from app.locks.redlock import Redlock
 
 
 class StarterWorkerFile(Starter):

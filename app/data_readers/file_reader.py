@@ -1,4 +1,4 @@
-from data_readers.data_read import DataReader
+from app.data_readers.data_read import DataReader
 
 
 class FileReader(DataReader[str]):
