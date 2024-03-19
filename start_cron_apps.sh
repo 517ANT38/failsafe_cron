@@ -7,7 +7,7 @@ COMMAND="cd $PATH_ROOT && $PATH_VENV main.py"
 if [ -z "$CONTAINER_ID" ]; then
     docker run -p 6379:6379 --name redis -d redis/redis-stack-server:latest
 else
-    docker start redis
+    docker start $CONTAINER_ID
 fi
 
 echo -e "* * * * *  $COMMAND\n* * * * *  $COMMAND" | crontab
