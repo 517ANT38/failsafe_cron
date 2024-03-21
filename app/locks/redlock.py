@@ -10,6 +10,12 @@ from app.util.util import ObjLock
 
 class Redlock(Lock):
     
+    unlock_script = """
+    if redis.call("get",KEYS[1]) == ARGV[1] then
+        return redis.call("del",KEYS[1])
+    else
+        return 0
+    end"""
     
     def __init__(self,connect_info:str|dict):
         
@@ -21,9 +27,7 @@ class Redlock(Lock):
         
         
     def _unlock_instance(self, resource:str,key:str):        
-        
-        if self.server_redis.get(resource) == key:
-            self.server_redis.delete(resource)
+        self.server_redis.eval(self.unlock_script, 1, resource, key)
         
         
     def _lock_instance(self,resorce: str,val:str, ttl: int):
@@ -34,10 +38,14 @@ class Redlock(Lock):
     def lock(self, resorce: str, ttl: int):
         
         val = self.gerate_val.generate(22)    
-        flag = self._lock_instance(resorce,val,ttl)
-        if not flag:            
-            raise LockException("It is not possible to take the lock")
-        return ObjLock(resorce,val)
+        try:
+            flag = self._lock_instance(resorce,val,ttl)
+            if not flag:            
+                raise LockException("It is not possible to take the lock")
+            return ObjLock(resorce,val)
+        except RedisError as e:
+            raise LockException(e)
+        
         
             
     def unlock(self, lock: ObjLock):
