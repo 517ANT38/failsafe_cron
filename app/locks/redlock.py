@@ -1,6 +1,4 @@
 
-import logging
-import time
 from redis import RedisError, StrictRedis
 from app.exceptions.lock_exception import LockException
 from app.locks.lock import Lock
