@@ -1,5 +1,3 @@
-
-import logging
 from app.starters.starter import Starter
 from app.data_readers.file_reader import FileReader
 from app.data_transform.transform_string import TransformStr
