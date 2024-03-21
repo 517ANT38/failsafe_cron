@@ -15,13 +15,10 @@ class StarterWorkerFile(Starter):
         self.data_transform = TransformStr()
         self.red_lock = Redlock(redis_url)
         
-    def run(self):
-        try:
-            lock = self.red_lock.acquire(self.resorce,3)
-            s = self.data_reader.read()
-            s = self.data_transform.transfrom(s)
-            self.data_writer.write(s)
-            self.red_lock.release(lock)
-        except Exception as e:
-            logging.exception("App exception",e)
+    def run(self):        
+        lock = self.red_lock.acquire(self.resorce,3)
+        s = self.data_reader.read()
+        s = self.data_transform.transfrom(s)
+        self.data_writer.write(s)
+        self.red_lock.release(lock)
     
