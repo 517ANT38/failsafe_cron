@@ -14,7 +14,8 @@ class StarterWorkerFile(Starter):
         self.data_writer = FileWriter(filename)
         self.data_transform = TransformStr()
         self.red_lock = Redlock(redis_url)
-    def run(self) -> None:
+        
+    def run(self):
         try:
             lock = self.red_lock.lock(self.resorce,3)
             s = self.data_reader.read()
