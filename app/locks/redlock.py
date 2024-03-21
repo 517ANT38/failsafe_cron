@@ -1,7 +1,8 @@
 
-from redis import RedisError, StrictRedis
+from redis import Redis, RedisError, StrictRedis
 from app.exceptions.lock_exception import LockException
 from app.locks.lock import Lock
+from app.util.generate_unique import GenerateUnique
 from app.util.simple_generate import SimpleGenerate
 from app.util.util import ObjLock
 
@@ -14,6 +15,8 @@ class Redlock(Lock):
     else
         return 0
     end"""
+    gerate_val:GenerateUnique
+    server_redis:Redis
     
     def __init__(self,connect_info:str|dict):
         
