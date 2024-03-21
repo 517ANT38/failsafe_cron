@@ -17,8 +17,6 @@ class StarterWorkerFile(Starter):
     def run(self) -> None:
         try:
             lock = self.red_lock.lock(self.resorce,3)
-            if not lock:
-                return
             s = self.data_reader.read()
             s = self.data_transform.transfrom(s)
             self.data_writer.write(s)
