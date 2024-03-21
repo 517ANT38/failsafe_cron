@@ -1,4 +1,5 @@
 
+import logging
 from app.starters.starter import Starter
 from app.data_readers.file_reader import FileReader
 from app.data_transform.transform_string import TransformStr
@@ -14,12 +15,14 @@ class StarterWorkerFile(Starter):
         self.data_transform = TransformStr()
         self.red_lock = Redlock(redis_url)
     def run(self) -> None:
-        lock = self.red_lock.lock(self.resorce,3)
-        if not lock:
-            return
-        s = self.data_reader.read()
-        s = self.data_transform.transfrom(s)
-        self.data_writer.write(s)
-        self.red_lock.unlock(lock)
-        
+        try:
+            lock = self.red_lock.lock(self.resorce,3)
+            if not lock:
+                return
+            s = self.data_reader.read()
+            s = self.data_transform.transfrom(s)
+            self.data_writer.write(s)
+            self.red_lock.unlock(lock)
+        except Exception as e:
+            logging.exception("App exception",e)
     
