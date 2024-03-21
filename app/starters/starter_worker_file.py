@@ -17,11 +17,11 @@ class StarterWorkerFile(Starter):
         
     def run(self):
         try:
-            lock = self.red_lock.lock(self.resorce,3)
+            lock = self.red_lock.acquire(self.resorce,3)
             s = self.data_reader.read()
             s = self.data_transform.transfrom(s)
             self.data_writer.write(s)
-            self.red_lock.unlock(lock)
+            self.red_lock.release(lock)
         except Exception as e:
             logging.exception("App exception",e)
     
