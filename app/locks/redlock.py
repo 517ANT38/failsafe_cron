@@ -2,7 +2,7 @@
 from redis import RedisError, StrictRedis
 from app.exceptions.lock_exception import LockException
 from app.locks.lock import Lock
-from app.util.simple_generate import SimpleGenerate
+from app.util.u_generate import UGenerate
 from app.util.util import ObjLock
 
 
@@ -17,7 +17,7 @@ class Redlock(Lock):
     
     def __init__(self,connect_info:str|dict):
         
-        self.gerate_val = SimpleGenerate()
+        self.gerate_val = UGenerate()
         if type(connect_info) == dict:
             self.server_redis = StrictRedis(**connect_info)
         else:
