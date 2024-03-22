@@ -10,4 +10,4 @@ else
     docker start $CONTAINER_ID
 fi
 
-echo -e "* * * * *  $COMMAND\n* * * * *  $COMMAND" | crontab
+echo "$COMMAND" | xargs echo -e "$COMMAND\n" | sed 's/^/* * * * * /' | crontab
