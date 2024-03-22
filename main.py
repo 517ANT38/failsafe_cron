@@ -8,5 +8,5 @@ if __name__ == "__main__":
         StarterWorkerFile("file.txt","redis://localhost:6379").run()  
         logging.info("successful write to file")  
     except LockException as e:
-        logging.error("error write to file",e.msg)
+        logging.error("error write to file: %s",e.msg)
     
