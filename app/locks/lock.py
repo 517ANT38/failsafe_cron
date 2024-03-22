@@ -1,12 +1,12 @@
 from abc import ABC,abstractmethod
 
-from app.util.util import ObjLock
+
 
 class Lock(ABC):
 
     @abstractmethod
-    def acquire(self,resorce:str,ttl:int) -> ObjLock:
+    def acquire(self) -> None:
         pass
     @abstractmethod
-    def release(self,resorce:ObjLock) -> None:
+    def release(self) -> None:
         pass

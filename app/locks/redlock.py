@@ -1,10 +1,9 @@
 
-from redis import Redis, RedisError, StrictRedis
+import uuid
+from redis import RedisError, StrictRedis
 from app.exceptions.lock_exception import LockException
 from app.locks.lock import Lock
-from app.util.generate_unique import GenerateUnique
-from app.util.simple_generate import SimpleGenerate
-from app.util.util import ObjLock
+
 
 
 class Redlock(Lock):
@@ -15,40 +14,44 @@ class Redlock(Lock):
     else
         return 0
     end"""
-    _generate_val:GenerateUnique
-    _server_redis:Redis
+   
     
-    def __init__(self,connect_info:str|dict,generate_val = SimpleGenerate()):
-        
-        self._generate_val = generate_val
+    
+    def __init__(self,connect_info:str|dict,resource_name:str,ttl:float):
+        self._ttl = int(ttl*1000)
+        self._resource_name = resource_name
         if type(connect_info) == dict:
             self._server_redis = StrictRedis(**connect_info)
         else:
             self._server_redis = StrictRedis.from_url(connect_info)
         
         
-    def _release_instance(self, resource:str,key:str):        
-        self._server_redis.eval(self._unlock_script, 1, resource, key)
+    def _do_release(self, resource:str,token:str):        
+        self._server_redis.eval(self._unlock_script, 1, resource, token)
         
         
-    def _acquire_instance(self,resorce: str,val:str, ttl: int):
-        return self._server_redis.set(resorce,val,nx = True,px = ttl)        
+    def _do_acquire(self,resorce: str,token:str, ttl: int):
+        return self._server_redis.set(resorce,token,nx = True,px = ttl)        
         
     
     
-    def acquire(self, resorce: str, ttl: int):
+    def acquire(self):
         
-        val = self._generate_val.generate(22)    
+        token = uuid.uuid1().hex    
         try:
-            flag = self._acquire_instance(resorce,val,ttl)
+            flag = self._do_acquire(self._resource_name,token,self._ttl)
             if not flag:            
                 raise LockException("It is not possible to take the lock")
-            return ObjLock(resorce,val)
+            self._token = token
         except RedisError as e:
-            raise LockException(e)
+            raise LockException("Redis error",e)
         
         
             
-    def release(self, lock: ObjLock):
-        self._release_instance(lock.resource,lock.key)
+    def release(self):
+        expected_token = self._token
+        if expected_token is None:
+            raise LockException("Cannot release an unlocked lock")
+        self._token = None
+        self._do_release(self._resource_name,expected_token)
 

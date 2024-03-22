@@ -12,12 +12,14 @@ class StarterWorkerFile(Starter):
         self.data_reader = FileReader(filename)
         self.data_writer = FileWriter(filename)
         self.data_transform = TransformStr()
-        self.red_lock = Redlock(redis_url)
+        self.red_lock = Redlock(redis_url,filename,3)
         
-    def run(self):        
-        lock = self.red_lock.acquire(self.resorce,3)
-        s = self.data_reader.read()
-        s = self.data_transform.transfrom(s)
-        self.data_writer.write(s)
-        self.red_lock.release(lock)
+    def run(self):
+        try:        
+            self.red_lock.acquire()
+            s = self.data_reader.read()
+            s = self.data_transform.transfrom(s)
+            self.data_writer.write(s)
+        finally:
+            self.red_lock.release()
     
