@@ -12,7 +12,7 @@ class StarterWorkerFile(Starter):
         self.data_reader = FileReader(filename)
         self.data_writer = FileWriter(filename)
         self.data_transform = TransformStr()
-        self.red_lock = Redlock(redis_url,filename,30)
+        self.red_lock = Redlock(redis_url,filename,1)
         
     def run(self):
         try:        
