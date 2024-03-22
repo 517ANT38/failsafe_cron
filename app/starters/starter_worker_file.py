@@ -8,7 +8,6 @@ from app.locks.redlock import Redlock
 
 class StarterWorkerFile(Starter):
     def __init__(self,filename:str,redis_url:str):
-        self.resorce = filename
         self.data_reader = FileReader(filename)
         self.data_writer = FileWriter(filename)
         self.data_transform = TransformStr()
