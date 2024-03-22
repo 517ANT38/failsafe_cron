@@ -39,7 +39,7 @@ class Redlock(Lock):
     
     def acquire(self):
         
-        token = uuid.uuid1().hex  
+        token = uuid.uuid1().hex.encode()  
         if not self._do_acquire(token):            
             raise LockException("It is not possible to take the lock")
         self._token = token
