@@ -1,6 +1,6 @@
 #!/bin/sh
 CONTAINER_ID=$(docker ps -a -q -f name=redis)
-PATH_ROOT="~/failsafe_cron"
+PATH_ROOT="$(pwd)"
 PATH_VENV=".venv/bin/python"
 COMMAND="cd $PATH_ROOT && $PATH_VENV main.py"
 
