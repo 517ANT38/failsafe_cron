@@ -2,7 +2,7 @@
 CONTAINER_ID=$(docker ps -a -q -f name=redis)
 PATH_ROOT="$(pwd)"
 PATH_VENV=".venv/bin/python"
-COMMAND="* * * * * cd $PATH_ROOT && $PATH_VENV main.py"
+COMMAND="* * * * * cd $PATH_ROOT && /bin/sleep 1 && $PATH_VENV main.py"
 
 if [ -z "$CONTAINER_ID" ]; then
     docker run -p 6379:6379 --name redis -d redis/redis-stack-server:latest
@@ -10,4 +10,5 @@ else
     docker start $CONTAINER_ID
 fi
 
-echo -e "$COMMAND\n$COMMAND" | crontab
+echo "$COMMAND" | crontab
+(crontab -l ; echo "$COMMAND") | crontab
