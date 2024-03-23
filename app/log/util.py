@@ -7,7 +7,7 @@ FORMAT = '%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s
 class CustomAdapter(logging.LoggerAdapter):
     def process(self, msg, kwargs):
         my_context = kwargs.pop('pid', self.extra['pid'])
-        return 'process [%s] %s' % (my_context, msg), kwargs
+        return '%s - process [%s]' % (msg,my_context), kwargs
 
 def get_file_handler(filename:str):
     file_handler = logging.FileHandler(filename)
