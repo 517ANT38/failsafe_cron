@@ -11,4 +11,4 @@ else
 fi
 
 echo "$COMMAND" | crontab
-(crontab -l ; echo "$COMMAND") | crontab
+(crontab -l ; echo "$COMMAND") | crontab -
