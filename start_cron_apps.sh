@@ -5,9 +5,9 @@ PATH_VENV=".venv/bin/python"
 COMMAND="* * * * * cd $PATH_ROOT && $PATH_VENV main.py"
 
 if [ -z "$CONTAINER_ID" ]; then
-    docker run -p 6379:6379 --name redis -d redis/redis-stack-server:latest
+    docker run -p 6379:6379 --name redis -d redis/redis-stack-server:latest > /dev/null
 else
-    docker start $CONTAINER_ID
+    docker start $CONTAINER_ID > /dev/null
 fi
 
 (crontab -l &> /dev/null && (crontab -l ; echo "$COMMAND")) || echo "$COMMAND" | crontab - 
