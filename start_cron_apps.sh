@@ -9,6 +9,10 @@ if [ -z "$CONTAINER_ID" ]; then
 else
     docker start $CONTAINER_ID
 fi
-
-echo "$COMMAND" | crontab
+if [[ $(crontab -l | grep -v ^# | grep -v '^$' | wc -l) -eq 0 ]]; then
+    echo "$COMMAND" | crontab -
+else
+    (crontab -l ; echo "$COMMAND") | crontab -
+fi
+echo "$COMMAND" | crontab -
 (crontab -l ; echo "$COMMAND") | crontab -
