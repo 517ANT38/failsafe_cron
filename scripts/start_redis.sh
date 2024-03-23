@@ -2,7 +2,7 @@
 GD=docker
 GU=$(groups "$USER" | grep -o -w "\b$GD\b")
 
-if [ "$GD" = "$GR" ]; then
+if [ "$GD" = "$GU" ]; then
     CONTAINER_ID=$(docker ps -a -q -f name=redis)
     if [ -z "$CONTAINER_ID" ]; then
         docker run -p 6379:6379 --name redis -d redis/redis-stack-server:latest > /dev/null
