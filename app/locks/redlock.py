@@ -38,8 +38,8 @@ class Redlock(Lock):
     
     def acquire(self,resource_name:str,ttl:float):        
         token = uuid.uuid1().hex.encode()  
-        ttlMl = int(ttl * 1000)
-        if not self._do_acquire(token,resource_name,ttlMl):            
+        ttl_ml = int(ttl * 1000)
+        if not self._do_acquire(token,resource_name,ttl_ml):            
             raise LockException("It is not possible to take the lock")
         return LockObj(resource_name,token)
         
