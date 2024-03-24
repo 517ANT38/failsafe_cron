@@ -1,6 +1,6 @@
 
 import uuid
-from redis import StrictRedis
+from redis import Redis, StrictRedis
 from app.exceptions.lock_exception import LockException
 from app.locks.lock import Lock
 
@@ -17,13 +17,14 @@ class Redlock(Lock):
    
     
     
-    def __init__(self,connect_info:str|dict,resource_name:str,ttl:float):
-        self._ttl = int(ttl*1000)
-        self._resource = resource_name
+    def __init__(self,connect_info:str|dict|Redis):
+        
         if type(connect_info) == dict:
             self._redis = StrictRedis(**connect_info)
-        else:
+        elif type(connect_info) == str:
             self._redis = StrictRedis.from_url(connect_info)
+        else:
+            self._redis = connect_info
         
         
     def _do_release(self,token:str):        
