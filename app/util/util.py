@@ -2,7 +2,7 @@
 import sys
 
 
-def get_env():
+def get_params():
     data = sys.argv[1]
     log = sys.argv[2] 
     redis = sys.argv[3]
