@@ -2,11 +2,15 @@ import os
 from app.exceptions.lock_exception import LockException
 from app.log.util import get_logger
 from app.starters.starter_worker_file import StarterWorkerFile
+from app.util.util import get_env
 
-logger = get_logger("file_log.log",__name__)
-if __name__ == "__main__":    
+
+if __name__ == "__main__":  
+    
+    envs = get_env() 
+    logger = get_logger(envs["log_folder"],__name__)
     try:
-        StarterWorkerFile("file.txt","redis://localhost:6379").run()
+        StarterWorkerFile(envs["data_folder"],envs["redis"]).run()
         logger.info("successful write to file",pid=os.getpid())           
     except LockException as e:
         logger.error("error write file: %s",e.msg,pid=os.getpid())    
