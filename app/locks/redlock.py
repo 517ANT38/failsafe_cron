@@ -8,13 +8,7 @@ from app.locks.lock import Lock, LockObj
 
 class Redlock(Lock):
     
-    _unlock_script = """
-    if redis.call("get",KEYS[1]) == ARGV[1] then
-        return redis.call("del",KEYS[1])
-    else
-        return 0
-    end"""
-   
+    
     
     
     def __init__(self,connect_info:str|dict|Redis):
@@ -27,8 +21,10 @@ class Redlock(Lock):
             self._redis = connect_info
             
         
-    def _do_release(self,resource:str,token:str):        
-        self._redis.eval(self._unlock_script, 1, resource, token)
+    def _do_release(self,resource:str,token:str):    
+        
+        if self._redis.get(resource) == token:
+            self._redis.delete(resource)
         
         
     def _do_acquire(self,token:str,resource:str,ttl:int):
