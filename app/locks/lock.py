@@ -1,12 +1,13 @@
 from abc import ABC,abstractmethod
+from collections import namedtuple
 
-from app.util.util import ObjLock
+LockObj = namedtuple("Lock", ("resource", "token"))
 
 class Lock(ABC):
 
     @abstractmethod
-    def lock(self,resorce:str,ttl:int) -> ObjLock|bool:
+    def acquire(self,resource_name:str,ttl:float) -> LockObj:
         pass
     @abstractmethod
-    def unlock(self,resorce:ObjLock) -> None:
+    def release(self,lock_obj:LockObj) -> None:
         pass

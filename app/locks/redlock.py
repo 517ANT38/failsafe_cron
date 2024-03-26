@@ -1,59 +1,49 @@
 
-import logging
-import time
-from redis import RedisError, StrictRedis
-from app.locks.lock import Lock
-from app.util.simple_generate import SimpleGenerate
-from app.util.util import ObjLock
+import uuid
+from redis import Redis, StrictRedis
+from app.exceptions.lock_exception import LockException
+from app.locks.lock import Lock, LockObj
+
 
 
 class Redlock(Lock):
     
     
-    def __init__(self,connect_info:str|dict,retry_count=3, retry_delay=0.2):
-        self.retry_count = retry_count
-        self.retry_delay = retry_delay
-        self.gerate_val = SimpleGenerate()
+    
+    
+    def __init__(self,connect_info:str|dict|Redis):
+        
         if type(connect_info) == dict:
-            self.server_redis = StrictRedis(**connect_info)
+            self._redis = StrictRedis(**connect_info)
+        elif type(connect_info) == str:
+            self._redis = StrictRedis.from_url(connect_info)
         else:
-            self.server_redis = StrictRedis.from_url(connect_info)
-        
-        
-    def _unlock_instance(self, resource:str,key:str):        
-        try:
-            if self.server_redis.get(resource) == key:
-                self.server_redis.delete(resource)
-        except Exception as e:
-            logging.exception("Error unlocking resource %s in server: %s", resource,e)
-            raise e
-        
-    def _lock_instance(self,resorce: str,val:str, ttl: int):
-        return self.server_redis.set(resorce,val,nx = True,px = ttl)        
-        
-    
-    
-    def lock(self, resorce: str, ttl: int):
-        retry,flag,err = 0,False,None
-        val = self.gerate_val.generate(22)       
-        while retry < self.retry_count:
-            start_time = int(time.time() * 1000)
-            try:
-                flag = self._lock_instance(resorce,val,ttl)
-            except RedisError as e:
-                logging.exception("Error redis error : %s", e)
-                err = e
-            elapsed_time = int(time.time() * 1000) - start_time
-            validity = int(ttl - elapsed_time)
-            if validity > 0 and flag:                
-                if err:
-                    raise err
-                return ObjLock(validity,resorce,val)
-            else:
-                retry += 1
-                time.sleep(self.retry_delay)
-        return False
+            self._redis = connect_info
             
-    def unlock(self, lock: ObjLock):
-        self._unlock_instance(lock.resource,lock.key)
+        
+    def _do_release(self,resource:str,token:str):    
+        if self._redis.get(resource) == token:
+            self._redis.delete(resource)
+            return True
+        return False
+        
+    def _do_acquire(self,token:str,resource:str,ttl:int):
+        if self._redis.set(resource,token,nx = True,px = ttl):
+            return True
+        return False        
+        
+    
+    
+    def acquire(self,resource_name:str,ttl:float):        
+        token = uuid.uuid1().hex.encode()  
+        ttl_ml = int(ttl * 1000)
+        if not self._do_acquire(token,resource_name,ttl_ml):            
+            raise LockException("It is not possible to take the lock")
+        return LockObj(resource_name,token)
+        
+        
+        
+            
+    def release(self,lock_obj:LockObj):        
+        self._do_release(lock_obj.resource,lock_obj.token)
 
