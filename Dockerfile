@@ -16,7 +16,7 @@ COPY --chmod=0755 scripts/start_cron.sh start_cron.sh
 
 RUN pip install -r requirements.txt
 RUN ./start_cron.sh
-
+RUN touch /var/log/cron.log
 
 
 CMD ["/bin/bash", "-c", "cron && tail -f /var/log/cron.log"]
