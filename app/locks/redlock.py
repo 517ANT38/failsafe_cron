@@ -22,10 +22,10 @@ class Redlock(Lock):
             
         
     def _do_release(self,resource:str,token:str):    
-        
         if self._redis.get(resource) == token:
             self._redis.delete(resource)
-        
+            return True
+        return False
         
     def _do_acquire(self,token:str,resource:str,ttl:int):
         if self._redis.set(resource,token,nx = True,px = ttl):
