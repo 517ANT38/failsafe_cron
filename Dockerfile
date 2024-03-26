@@ -15,7 +15,7 @@ COPY requirements.txt .
 COPY --chmod=0755 scripts/create_cmd.sh create_cmd.sh
 
 RUN pip install -r requirements.txt
-RUN touch /var/log/cron.log
+RUN mkfifo --mode 0666 /var/log/cron.log
 RUN mkdir /data
 
 CMD  ./create_cmd.sh && cron && tail -f /var/log/cron.log
