@@ -18,9 +18,7 @@ services:
     networks:
       - network
 
-volumes:
-  log_volume:
-  data_volume:
+
 
 networks:
   network:
