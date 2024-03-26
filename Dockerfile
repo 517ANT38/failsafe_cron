@@ -12,7 +12,7 @@ WORKDIR /failsafe_cron
 COPY app app
 COPY main.py .
 COPY requirements.txt .
-COPY --chmod=0755 scripts/create_cmd.sh create_cmd.sh
+COPY --chmod=0755 scripts/create_cmd.sh .
 
 RUN pip install -r requirements.txt
 RUN mkfifo --mode 0666 /var/log/cron.log
