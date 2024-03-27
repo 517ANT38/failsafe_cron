@@ -1,20 +1,22 @@
 
-FROM python
+FROM python:3.12 as builder
 
+COPY requirements.txt .
+RUN pip install --user -r requirements.txt
 
+FROM python:3.12-slim
+
+ENV PATH=/root/.local:$PATH
 ENV DATA_FOLDER=/data
 ENV LOG_FOLDER=/var/log
-RUN apt-get update && apt-get -y install cron
-
 
 WORKDIR /failsafe_cron
-
+COPY --from=builder /root/.local /root/.local
 COPY app app
 COPY main.py .
-COPY requirements.txt .
 COPY --chmod=0755 scripts/create_cmd.sh .
 
-RUN pip install -r requirements.txt
+RUN apt-get update && apt-get -y install cron
 RUN mkfifo --mode 0666 /var/log/cron.log
 RUN mkdir /data
 
