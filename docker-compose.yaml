@@ -1,7 +1,7 @@
 version: '3.7'
 
 services:
-  apps:
+  apps1:
     build: 
       context: .
       dockerfile: Dockerfile
@@ -9,6 +9,20 @@ services:
       - REDIS_CONNECT="redis://redis:6379"
     networks:
       - network
+    volumes:
+      - data:/data
+    depends_on:
+      - redis
+  apps2:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - REDIS_CONNECT="redis://redis:6379"
+    networks:
+      - network
+    volumes:
+      - data:/data
     depends_on:
       - redis
 
@@ -19,7 +33,8 @@ services:
       - network
 
 
-
+volumes:
+  data:
 networks:
   network:
     driver: bridge
