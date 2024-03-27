@@ -14,10 +14,11 @@ WORKDIR /failsafe_cron
 COPY --from=builder /root/.local /root/.local
 COPY app app
 COPY main.py .
+COPY --chmod=0755 scripts/cron_supervisor.sh .
 COPY --chmod=0755 scripts/create_cmd.sh .
 
 RUN apt-get update && apt-get -y install cron
 RUN mkfifo --mode 0666 /var/log/cron.log
 RUN mkdir /data
 
-CMD  ./create_cmd.sh && cron && tail -f /var/log/cron.log
+CMD  ./create_cmd.sh && ./cron_supervisor.sh & wait $!
